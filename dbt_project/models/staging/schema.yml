@@ -1,0 +1,74 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: "One row per unique customer, cleaned and de-duplicated from the raw CRM export."
+    columns:
+      - name: customer_id
+        description: "Primary key."
+        tests:
+          - unique
+          - not_null
+      - name: email
+        description: "Lower-cased, trimmed email. Can be null — see is_missing_email."
+      - name: loyalty_tier
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["Bronze", "Silver", "Gold", "Platinum"]
+
+  - name: stg_products
+    description: "One row per product in the catalog."
+    columns:
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+      - name: unit_price
+        tests:
+          - not_null
+
+  - name: stg_orders
+    description: "One row per order header."
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+      - name: order_status
+        tests:
+          - accepted_values:
+              arguments:
+                values: ["DELIVERED", "SHIPPED", "PROCESSING", "CANCELLED", "RETURNED"]
+
+  - name: stg_order_items
+    description: "One row per line item within an order."
+    columns:
+      - name: order_item_id
+        tests:
+          - unique
+          - not_null
+      - name: order_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_products')
+                field: product_id
+      - name: quantity
+        tests:
+          - not_null
