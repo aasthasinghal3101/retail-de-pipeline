@@ -1,0 +1,26 @@
+# Local dev profile — points dbt at the DuckDB file that
+# ingestion/load_to_warehouse.py populates. In production this file is
+# replaced by a Snowflake or Databricks profile block; every model in
+# this project is written in ANSI SQL so no model code changes.
+#
+# Run with:  dbt run --profiles-dir . --project-dir .
+# (or export DBT_PROFILES_DIR=$(pwd) once)
+retail_de_pipeline:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: "../data/warehouse.duckdb"
+      threads: 4
+
+    # Example production target — uncomment and fill in to run on Snowflake.
+    # prod_snowflake:
+    #   type: snowflake
+    #   account: "{{ env_var('SNOWFLAKE_ACCOUNT') }}"
+    #   user: "{{ env_var('SNOWFLAKE_USER') }}"
+    #   password: "{{ env_var('SNOWFLAKE_PASSWORD') }}"
+    #   role: TRANSFORMER
+    #   database: RETAIL_DE_PIPELINE
+    #   warehouse: TRANSFORM_WH
+    #   schema: marts
+    #   threads: 8
