@@ -13,8 +13,8 @@ scikit-learn>=1.5
 # Testing
 pytest>=8.0
 
-# Optional -- only needed for `ask_data.py --use-llm`
+# Optional — only needed for `ask_data.py --use-llm`
 # anthropic>=0.40
 
-# Optional -- only needed to actually schedule orchestration/airflow_dag.py
+# Optional — only needed to actually schedule orchestration/airflow_dag.py
 # apache-airflow>=2.7
