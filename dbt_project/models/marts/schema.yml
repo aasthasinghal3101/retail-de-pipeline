@@ -1,0 +1,55 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: "Customer dimension — one row per customer."
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_products
+    description: "Product dimension — one row per product."
+    columns:
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+
+  - name: fact_order_items
+    description: "Atomic fact table — one row per order line item."
+    columns:
+      - name: order_item_id
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customers')
+                field: customer_id
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_products')
+                field: product_id
+
+  - name: mart_daily_sales
+    description: "Daily revenue and units sold by region and product category. Excludes cancelled orders."
+    columns:
+      - name: total_revenue
+        tests:
+          - not_null
+
+  - name: mart_customer_ltv
+    description: "One row per customer with lifetime order count, spend, and recency, for segmentation/churn analysis."
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
