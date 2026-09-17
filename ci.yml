@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run unit tests
+        run: pytest tests/ -v
+
+      - name: Run pipeline end-to-end (ingestion -> warehouse -> dbt)
+        run: python orchestration/run_pipeline.py --customers 100 --products 30 --orders 500
+
+      - name: dbt docs generate
+        working-directory: dbt_project
+        run: dbt docs generate --profiles-dir . --project-dir .
+
+      - name: Build GenAI retrieval index
+        working-directory: genai_assistant
+        run: python build_index.py
+
+      - name: Smoke-test the query assistant
+        working-directory: genai_assistant
+        run: python ask_data.py "what is total revenue by region"
