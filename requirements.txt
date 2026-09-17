@@ -1,0 +1,20 @@
+# Core pipeline
+duckdb>=1.5
+faker>=40.0
+pandas>=2.2
+
+# Transformation
+dbt-core>=1.12
+dbt-duckdb>=1.11
+
+# GenAI / RAG assistant
+scikit-learn>=1.5
+
+# Testing
+pytest>=8.0
+
+# Optional -- only needed for `ask_data.py --use-llm`
+# anthropic>=0.40
+
+# Optional -- only needed to actually schedule orchestration/airflow_dag.py
+# apache-airflow>=2.7
